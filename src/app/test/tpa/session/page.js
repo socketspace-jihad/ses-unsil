@@ -7,21 +7,27 @@ import React, { useState, useEffect } from 'react';
 const Session = (props) => {
   const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState(() => {
-    const savedAnswers = window.localStorage.getItem('answers');
-    return savedAnswers ? JSON.parse(savedAnswers) : [];
-  });
+  const [answers, setAnswers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [unansweredQuestions, setUnansweredQuestions] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [listening, setListening] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Set initial answers from localStorage on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedAnswers = window.localStorage.getItem('answers');
+      setAnswers(savedAnswers ? JSON.parse(savedAnswers) : []);
+    }
+  }, []);
+
+  // Fetch questions from API
   useEffect(() => {
     axios.get("/api/test-tpa", {
-        params: {
-            "test_tpa_id": props.searchParams.test_tpa_id
-        }
+      params: {
+        "test_tpa_id": props.searchParams.test_tpa_id
+      }
     })
       .then(response => {
         const fetchedQuestions = [];
@@ -43,25 +49,28 @@ const Session = (props) => {
         setQuestions(fetchedQuestions);
       })
       .catch(err => {
-        if (err.response.status == 401) {
-            router.push("/auth/login");
+        if (err.response.status === 401) {
+          router.push("/auth/login");
         }
       });
   }, [props.searchParams.test_tpa_id, router]);
 
+  // Save answers to localStorage on client side
   useEffect(() => {
-    window.localStorage.setItem('answers', JSON.stringify(answers));
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('answers', JSON.stringify(answers));
+    }
   }, [answers]);
 
   const handleAnswer = (index) => {
     const newAnswers = [...answers];
-    
+
     if (newAnswers[currentQuestion] === index) {
       newAnswers[currentQuestion] = null;
     } else {
       newAnswers[currentQuestion] = index;
     }
-  
+
     setAnswers(newAnswers);
   };
 
@@ -104,13 +113,15 @@ const Session = (props) => {
       }
       return acc;
     }, []);
-  
+
     axios.post("/api/submit-ujian-tpa", {
-      "answers":submittedAnswers,
-      "mahasiswa_test_tpa_id":parseInt(props.searchParams.mahasiswa_test_tpa_id)
+      "answers": submittedAnswers,
+      "mahasiswa_test_tpa_id": parseInt(props.searchParams.mahasiswa_test_tpa_id)
     })
       .then(resp => {
-        window.localStorage.removeItem('answers');
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem('answers');
+        }
         setLoading(false);
         setShowModal(false);
         router.push('/dashboard');
