@@ -6,67 +6,70 @@ import { useState, useEffect } from 'react';
 
 const Session = (props) => {
   const router = useRouter();
-    
+  
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState(() => {
-    const savedAnswers = window.localStorage.getItem('answers');
-    return savedAnswers ? JSON.parse(savedAnswers) : [];
-  });
+  const [answers, setAnswers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [unansweredQuestions, setUnansweredQuestions] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [listening, setListening] = useState(false);
 
   useEffect(() => {
-    axios.get("/api/test-matkul",{
-        params: {
-            "test_matkul_categorized_id":props.searchParams.test_matkul_categorized_id
-        }
-    })
-      .then(response => {
-        const fetchedQuestions = [];
-        const currentQuestion = {};
-        response.data.rows.forEach(row => {
-          if (!currentQuestion[row.question_id]) {
-            currentQuestion[row.question_id] = {
-              id: row.question_id,
-              question: row.question,
-              options: []
-            };
-            fetchedQuestions.push(currentQuestion[row.question_id]);
-          }
-          currentQuestion[row.question_id].options.push({
-            id: row.option_id,
-            text: row.option
-          });
-        });
-        setQuestions(fetchedQuestions);
-      })
-      .catch(err => {
-        if(err.response.status == 401) {
-            router.push("/auth/login");
-        }
-      });
+    if (typeof window !== 'undefined') {
+      const savedAnswers = window.localStorage.getItem('answers');
+      setAnswers(savedAnswers ? JSON.parse(savedAnswers) : []);
+    }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem('answers', JSON.stringify(answers));
+    axios.get("/api/test-matkul", {
+      params: {
+        "test_matkul_categorized_id": props.searchParams.test_matkul_categorized_id
+      }
+    })
+    .then(response => {
+      const fetchedQuestions = [];
+      const currentQuestion = {};
+      response.data.rows.forEach(row => {
+        if (!currentQuestion[row.question_id]) {
+          currentQuestion[row.question_id] = {
+            id: row.question_id,
+            question: row.question,
+            options: []
+          };
+          fetchedQuestions.push(currentQuestion[row.question_id]);
+        }
+        currentQuestion[row.question_id].options.push({
+          id: row.option_id,
+          text: row.option
+        });
+      });
+      setQuestions(fetchedQuestions);
+    })
+    .catch(err => {
+      if (err.response && err.response.status == 401) {
+        router.push("/auth/login");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('answers', JSON.stringify(answers));
+    }
   }, [answers]);
 
   const handleAnswer = (index) => {
-    console.log(index);
     const newAnswers = [...answers];
     
-    // Jika jawaban yang dipilih adalah jawaban yang sudah ada, set ke null
     if (newAnswers[currentQuestion] === index) {
-      newAnswers[currentQuestion] = null;  // Mengatur jawaban menjadi tidak terjawab
+      newAnswers[currentQuestion] = null;
     } else {
-      newAnswers[currentQuestion] = index; // Mengatur jawaban baru
+      newAnswers[currentQuestion] = index;
     }
   
     setAnswers(newAnswers);
   };
-  
 
   const handleNext = () => {
     setCurrentQuestion((prev) => (prev < questions.length - 1 ? prev + 1 : prev));
@@ -97,9 +100,7 @@ const Session = (props) => {
     }
   };
 
-
   const confirmSubmit = () => {
-    // Mendapatkan semua jawaban beserta ID soal dan ID jawabannya, tetapi hanya yang sudah dijawab
     const submittedAnswers = questions.reduce((acc, question, index) => {
       const selectedOption = question.options[answers[index]];
       if (selectedOption) {
@@ -111,14 +112,12 @@ const Session = (props) => {
       return acc;
     }, []);
   
-    // Mencetak jawaban ke console
     console.log("Jawaban yang disubmit:", submittedAnswers);
   
     setShowModal(false);
     alert('Jawaban Anda telah disubmit!');
-    // Logika submit jawaban bisa ditambahkan di sini
   };
-  
+
   const cancelSubmit = () => {
     setShowModal(false);
   };
@@ -156,16 +155,14 @@ const Session = (props) => {
     };
 
     recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.trim().toUpperCase();
-        const words = transcript.split(" ");
-        const option = words[words.length - 1];
-        handleVoiceAnswer(option);
-        setListening(false);
+      const transcript = event.results[0][0].transcript.trim().toUpperCase();
+      const words = transcript.split(" ");
+      const option = words[words.length - 1];
+      handleVoiceAnswer(option);
+      setListening(false);
     };
-    
 
     recognition.onerror = (event) => {
-        console.log(event.results)
       console.error(event.error);
       setListening(false);
     };
