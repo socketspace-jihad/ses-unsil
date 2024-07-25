@@ -8,7 +8,7 @@ const Session = (props) => {
   const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState(() => {
-    const savedAnswers = localStorage.getItem('answers');
+    const savedAnswers = window.localStorage.getItem('answers');
     return savedAnswers ? JSON.parse(savedAnswers) : [];
   });
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +50,7 @@ const Session = (props) => {
   }, [props.searchParams.test_tpa_id, router]);
 
   useEffect(() => {
-    localStorage.setItem('answers', JSON.stringify(answers));
+    window.localStorage.setItem('answers', JSON.stringify(answers));
   }, [answers]);
 
   const handleAnswer = (index) => {
@@ -110,7 +110,7 @@ const Session = (props) => {
       "mahasiswa_test_tpa_id":parseInt(props.searchParams.mahasiswa_test_tpa_id)
     })
       .then(resp => {
-        localStorage.removeItem('answers');
+        window.localStorage.removeItem('answers');
         setLoading(false);
         setShowModal(false);
         router.push('/dashboard');

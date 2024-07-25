@@ -2,14 +2,14 @@
 "use client"
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const Session = (props) => {
   const router = useRouter();
     
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState(() => {
-    const savedAnswers = localStorage.getItem('answers');
+    const savedAnswers = window.localStorage.getItem('answers');
     return savedAnswers ? JSON.parse(savedAnswers) : [];
   });
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +50,7 @@ const Session = (props) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('answers', JSON.stringify(answers));
+    window.localStorage.setItem('answers', JSON.stringify(answers));
   }, [answers]);
 
   const handleAnswer = (index) => {
