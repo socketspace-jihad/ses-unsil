@@ -19,7 +19,9 @@ export default function Dashboard({cookies}){
         return router.push("/auth/login");
       }
       axios.get("/api/data")
-      .then((data)=>{setTestData(data.data.rows)})
+      .then((data)=>{
+        console.log(data.data)
+        setTestData(data.data.rows)})
       .catch(err=>{
         if(err.response.status == 401){
           return router.push("/auth/login");
@@ -138,17 +140,49 @@ export default function Dashboard({cookies}){
                     <td className="py-2 px-4 border-r">{formatDateTimeHumanReadable(new Date(item.start_date))}</td>
                     <td className="py-2 px-4 border-r">{formatDateTimeHumanReadable(new Date(item.due_date))}</td>
                     <td className="py-2 px-4 border-r">{item.test_tpa_id > 0 ? "YA":"TIDAK"}</td>
-                    <td className="py-2 px-4 border-r">{item.counter > 0 ? (item.status_pengerjaan == 1 ? "SEDANG DIKERJAKAN" : "SELESAI") :"BELUM DIKERJAKAN"}</td>
+                    <td className="py-2 px-4 border-r">{item.counter > 0 ? (item.status_pengerjaan == 1 ? "SELESAI" : "TEST TPA SUDAH DIPROSES") :"BELUM DIKERJAKAN"}</td>
                     <td className="py-2 px-4">
-                    {item.counter == 0 ?  
+                    {item.counter_tpa == 0 ?  
                       <Link 
                         href={{
                           pathname: item.need_test_tpa ? "/test/tpa" : "/test",
                           query: item
                         }}
-                      ><button type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Kerjakan</button></Link> : 
-                      item.status_pengerjaan == 1 ? <button type="button" className="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-900">Lanjutkan</button> :
-                      <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Lihat</button>
+                      ><button type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Test TPA</button></Link> : 
+                      item.status_pengerjaan_tpa == 0 ? <Link
+                        href={{
+                          pathname: "/test/tpa",
+                          query: item
+                        }}
+                      >
+                        <button type="button" className="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-900">Lanjutkan Test TPA</button>
+                      </Link> :
+                      item.counter == 0 ?
+                      <Link
+                        href={{
+                          pathname: "/test/tpa",
+                          query: item
+                        }}
+                      >
+                         <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Lihat Hasil TPA dan Lanjut Test Mata Kuliah</button>
+                      </Link> : 
+                      item.status_pengerjaan == 0 ?
+                      <Link
+                        href={{
+                          pathname: "/test",
+                          query: item
+                        }}
+                      >
+                      <button type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Lanjutkan Test Mata Kuliah</button>
+                      </Link> :
+                      <Link
+                        href={{
+                          pathname: "/test/score",
+                          query:item
+                        }}
+                      >
+                        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Lihat Hasil Test</button>
+                      </Link>
                     }
                     </td>
                   </tr>

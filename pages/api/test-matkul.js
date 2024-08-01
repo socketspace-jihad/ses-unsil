@@ -4,10 +4,8 @@ import { authMiddleware } from "../../middleware/auth"
 async function handler(req,res){
     if (req.method === 'GET') {
         try {
-            const { need_test_tpa,test_matkul_categorized_id } = req.query;
-            const categorized_id = 1
+            const { test_matkul_categorized_id } = req.query;
             const conn = await initializeDatabase()
-            if (!need_test_tpa){
             const [rows] =  await conn.execute(`
                 SELECT
                     tms.id AS question_id,
@@ -18,8 +16,7 @@ async function handler(req,res){
                 JOIN test_matkul_jawaban AS tmj
                     ON tmj.test_matkul_soal_id = tms.id
                 WHERE tms.test_matkul_categorized_id = ?
-            `,[categorized_id]);
-            }
+            `,[test_matkul_categorized_id]);
             return res.status(200).json({rows})
         } catch(error){
             console.log(error)

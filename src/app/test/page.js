@@ -9,8 +9,10 @@ const Ujian = (props) => {
   const router = useRouter();
 
   const handleStart = () => {
-    router.push('/test/session'); // Ganti dengan halaman ujian sebenarnya
+    router.push('/test/session?test_matkul_categorized_id='+props.searchParams.test_matkul_categorized_id+'&mahasiswa_test_matkul_id='+props.searchParams.mahasiswa_test_matkul_id); // Ganti dengan halaman ujian sebenarnya
   };
+
+  console.log(props.searchParams)
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

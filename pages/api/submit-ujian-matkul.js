@@ -9,34 +9,35 @@ async function handler(req,res){
             await conn.beginTransaction();
             const [rows] =  await conn.query(`
                 INSERT INTO
-                    mahasiswa_test_tpa_jawaban
+                    mahasiswa_test_matkul_jawaban
                 (
-                    mahasiswa_test_tpa_id,
-                    test_tpa_soal_id,
-                    test_tpa_jawaban_id
+                    mahasiswa_test_matkul_id,
+                    test_matkul_soal_id,
+                    test_matkul_jawaban_id
                 ) VALUES ?
             `,[jawaban]);
 
 
             const [rows2] =  await conn.query(`
-                UPDATE mahasiswa_test_tpa AS mtt
+                UPDATE mahasiswa_test_matkul AS mtm
                 INNER JOIN (
                     SELECT
-                        mttj.mahasiswa_test_tpa_id AS id,
-                        SUM(ttj.score) AS total
+                        mtmj.mahasiswa_test_matkul_id AS id,
+                        SUM(tmj.score) AS total
                     FROM
-                        mahasiswa_test_tpa_jawaban AS mttj
-                    LEFT JOIN test_tpa_jawaban AS ttj
-                        ON mttj.test_tpa_jawaban_id = ttj.id
-                    WHERE mttj.mahasiswa_test_tpa_id = ?
-                    GROUP BY mttj.mahasiswa_test_tpa_id
+                        mahasiswa_test_matkul_jawaban AS mtmj
+                    LEFT JOIN test_matkul_jawaban AS tmj
+                        ON mtmj.test_matkul_jawaban_id = tmj.id
+                    WHERE mtmj.mahasiswa_test_matkul_id = ?
+                    GROUP BY mtmj.mahasiswa_test_matkul_id
                 ) AS scores
-                ON mtt.id = scores.id
+                ON mtm.id = scores.id
                 SET
-                    mtt.status_pengerjaan = 1,
-                    mtt.score = scores.total
-                WHERE mtt.id = ?;
-            `,[req.body.mahasiswa_test_tpa_id,req.body.mahasiswa_test_tpa_id]);
+                    mtm.status_pengerjaan = 1,
+                    mtm.score = scores.total
+                WHERE mtm.id = ?;
+            `,[req.body.mahasiswa_test_matkul_id,req.body.mahasiswa_test_matkul_id]);
+            console.log("DONE")
             await conn.commit();
             return res.status(200).json({rows})
         } catch(error){

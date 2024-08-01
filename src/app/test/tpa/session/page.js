@@ -195,7 +195,7 @@ const Session = (props) => {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center text-black p-6">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl text-center">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">Ujian</h1>
+          <h1 className="text-3xl font-bold mb-6 text-gray-800">Ujian TPA</h1>
           <p className="text-xl text-gray-700">Menyiapkan Ujian ...</p>
         </div>
       </div>
@@ -205,7 +205,7 @@ const Session = (props) => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-row justify-center items-start text-black p-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl mt-10">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Ujian</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Ujian TPA</h1>
         <div className="mb-6">
           <p className="text-xl mb-4">{`${currentQuestion + 1}. ${questions[currentQuestion].question}`}</p>
           <div className="grid grid-cols-1 gap-4">

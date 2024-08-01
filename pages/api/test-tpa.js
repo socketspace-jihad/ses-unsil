@@ -4,9 +4,7 @@ import { authMiddleware } from "../../middleware/auth"
 async function handler(req,res){
     if (req.method === 'GET') {
         try {
-            console.log(req.query);
             const { test_tpa_id } = req.query;
-            console.log("TPA",test_tpa_id)
             const conn = await initializeDatabase()
             const [rows] =  await conn.execute(`
                 SELECT

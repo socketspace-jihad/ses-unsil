@@ -12,13 +12,15 @@ const Ujian = (props) => {
   const [data, setData] = useState([]);
   const [kelas, setKelas] = useState("");
   const [error, setError] = useState("");
+  console.log(props.searchParams);
 
   useEffect(() => {
     axios({
         url: "/api/test-data-tpa",
         params: {
             "ok": 1,
-            "test_tpa_id": props.searchParams.test_tpa_id
+            "test_tpa_id": props.searchParams.test_tpa_id,
+            "test_matkul_id":props.searchParams.id
         },
         method: "GET"
     })
@@ -28,7 +30,7 @@ const Ujian = (props) => {
     .catch(err => console.log(err));
   }, [props.searchParams.test_tpa_id]);
 
-  const handleStart = () => {
+  const handleStartTPA = () => {
     if (kelas.trim() === "") {
         setError("Kelas wajib diisi");
         return;
@@ -36,7 +38,7 @@ const Ujian = (props) => {
 
     if (data.length !== 0) {
         if(data[0].status_pengerjaan != 0){
-            router.push('/test/session');
+            router.push('/test/session?&mahasiswa_test_matkul_id='+props.searchParams.mahasiswa_test_matkul_id);
             return;
         }
         router.push('/test/tpa/session?test_tpa_id=' + props.searchParams.test_tpa_id+'&mahasiswa_test_tpa_id='+ props.searchParams.id); 
@@ -50,6 +52,23 @@ const Ujian = (props) => {
     })
     .catch(err=>alert("Tidak dapat memulai Tes"));// Ganti dengan halaman ujian sebenarnya
   };
+
+  const handleStartTestMatkul = () => {
+    axios({
+      url: "/api/test-matkul-categorized",
+      data: {
+          "ok": 1,
+          "test_matkul_id": props.searchParams.id,
+          "tpa_score":data[0].score,
+          "kelas":kelas
+      },
+      method: "POST"
+  })
+  .then(response => {
+      router.push('/test/session?test_matkul_categorized_id='+response.data.test_matkul_categorized_id+'&mahasiswa_test_matkul_id='+response.data.mahasiswa_test_matkul_id);
+  })
+  .catch(err => console.log(err));
+  }
 
   const handleKelasChange = (event) => {
     setKelas(event.target.value);
@@ -74,7 +93,7 @@ const Ujian = (props) => {
         <p className="text-gray-700 mb-6">
           Status Pengerjaan Test TPA : {data.length !== 0 ? "Sudah Mengerjakan TPA" : "Belum Mengerjakan TPA"}
         </p>
-        {data.length !== 0 ? <p>Skor: </p> : <></>}
+        {data.length !== 0 ? <p>Skor TPA: {data[0].score}</p> : <></>}
         
         <div className="mb-6">
           <label htmlFor="kelas" className="block text-gray-700">Kelas:</label>
@@ -90,10 +109,10 @@ const Ujian = (props) => {
         </div>
         
         <button
-          onClick={handleStart}
+          onClick={data.length !== 0 ? (data[0].status_pengerjaan != 0 ? handleStartTestMatkul : handleStartTPA) : handleStartTPA }
           className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
         >
-          {data.length !== 0 ? "Kerjakan Tes Mata Kuliah" : "Kerjakan Tes TPA"}
+          {data.length !== 0 ? (data[0].status_pengerjaan != 0 ? "Kerjakan Tes Mata Kuliah" : "Teruskan Tes TPA") : "Kerjakan Tes TPA"}
         </button>
       </div>
     </div>

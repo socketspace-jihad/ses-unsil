@@ -13,6 +13,7 @@ const Session = (props) => {
   const [unansweredQuestions, setUnansweredQuestions] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [listening, setListening] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -101,21 +102,34 @@ const Session = (props) => {
   };
 
   const confirmSubmit = () => {
+    setLoading(true);
+
     const submittedAnswers = questions.reduce((acc, question, index) => {
       const selectedOption = question.options[answers[index]];
       if (selectedOption) {
-        acc.push({
-          question_id: question.id,
-          answer_id: selectedOption.id
-        });
+        acc.push([parseInt(props.searchParams.mahasiswa_test_matkul_id), question.id, selectedOption.id]);
       }
       return acc;
     }, []);
-  
-    console.log("Jawaban yang disubmit:", submittedAnswers);
-  
-    setShowModal(false);
-    alert('Jawaban Anda telah disubmit!');
+
+    axios.post("/api/submit-ujian-matkul", {
+      "answers": submittedAnswers,
+      "mahasiswa_test_matkul_id": parseInt(props.searchParams.mahasiswa_test_matkul_id)
+    })
+      .then(resp => {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem('answers');
+        }
+        setLoading(false);
+        setShowModal(false);
+        console.log("DONE");
+        router.push('/dashboard');
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+        setShowModal(false);
+      });
   };
 
   const cancelSubmit = () => {
@@ -180,7 +194,7 @@ const Session = (props) => {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center text-black p-6">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl text-center">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">Ujian</h1>
+          <h1 className="text-3xl font-bold mb-6 text-gray-800">Ujian Mata Kuliah</h1>
           <p className="text-xl text-gray-700">Menyiapkan Ujian ...</p>
         </div>
       </div>
@@ -190,7 +204,7 @@ const Session = (props) => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-row justify-center items-start text-black p-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl mt-10">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Ujian</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Ujian Mata Kuliah</h1>
         <div className="mb-6">
           <p className="text-xl mb-4">{`${currentQuestion + 1}. ${questions[currentQuestion].question}`}</p>
           <div className="grid grid-cols-1 gap-4">

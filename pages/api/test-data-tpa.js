@@ -6,7 +6,6 @@ async function handler(req, res) {
     // Handle different HTTP methods
     if (req.method === 'GET') {
         try {
-            console.log(req.query);
             const {test_tpa_id} = req.query;
             const conn = await initializeDatabase()
             const [rows] =  await conn.execute(`
