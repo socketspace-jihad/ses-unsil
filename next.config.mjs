@@ -5,6 +5,10 @@ import { getConnection, initializeDatabase } from './src/dbconfig.js';
 console.log("INITIALIZED");
 await initializeDatabase();
 
-const nextConfig = {};
+const nextConfig = {
+    experimental: {
+        missingSuspenseWithCSRBailout: false,
+    }
+};
 
 export default nextConfig;

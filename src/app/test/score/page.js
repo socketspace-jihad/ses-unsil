@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { setCookie } from "nookies";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -9,16 +9,19 @@ import axios from "axios";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+function useParams(){
+}
+
 export default function Home(props) {
   const router = useRouter();
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
   const [tpaData, setTpaData] = useState({ jawaban: [] });
-
+  const params = useSearchParams();
   useEffect(() => {
     axios
       .get("/api/get-score-tpa", {
         params: {
-          test_tpa_id: props.searchParams.test_tpa_id,
+          test_tpa_id: params.get("test_tpa_id"),
         },
       })
       .then((resp) => {

@@ -1,7 +1,7 @@
 // pages/mulai-ujian.js
 "use client"
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 const Session = (props) => {
@@ -15,6 +15,8 @@ const Session = (props) => {
   const [listening, setListening] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const params = useSearchParams();
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedAnswers = window.localStorage.getItem('answers');
@@ -25,7 +27,7 @@ const Session = (props) => {
   useEffect(() => {
     axios.get("/api/test-matkul", {
       params: {
-        "test_matkul_categorized_id": props.searchParams.test_matkul_categorized_id
+        "test_matkul_categorized_id": params.get("test_matkul_categorized_id")
       }
     })
     .then(response => {
@@ -107,14 +109,14 @@ const Session = (props) => {
     const submittedAnswers = questions.reduce((acc, question, index) => {
       const selectedOption = question.options[answers[index]];
       if (selectedOption) {
-        acc.push([parseInt(props.searchParams.mahasiswa_test_matkul_id), question.id, selectedOption.id]);
+        acc.push([parseInt(params.get("mahasiswa_test_matkul_id")), question.id, selectedOption.id]);
       }
       return acc;
     }, []);
 
     axios.post("/api/submit-ujian-matkul", {
       "answers": submittedAnswers,
-      "mahasiswa_test_matkul_id": parseInt(props.searchParams.mahasiswa_test_matkul_id)
+      "mahasiswa_test_matkul_id": parseInt(params.get("mahasiswa_test_matkul_id"))
     })
       .then(resp => {
         if (typeof window !== 'undefined') {

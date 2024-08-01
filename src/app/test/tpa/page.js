@@ -2,7 +2,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { formatDateTimeHumanReadable } from '../../../../utils/dateFormat';
 import axios from 'axios';
 
@@ -12,15 +12,16 @@ const Ujian = (props) => {
   const [data, setData] = useState([]);
   const [kelas, setKelas] = useState("");
   const [error, setError] = useState("");
-  console.log(props.searchParams);
+
+  const params = useSearchParams();
 
   useEffect(() => {
     axios({
         url: "/api/test-data-tpa",
         params: {
             "ok": 1,
-            "test_tpa_id": props.searchParams.test_tpa_id,
-            "test_matkul_id":props.searchParams.id
+            "test_tpa_id": params.get("test_tpa_id"),
+            "test_matkul_id":params.get("id")
         },
         method: "GET"
     })
@@ -28,7 +29,7 @@ const Ujian = (props) => {
         setData(response.data.rows);
     })
     .catch(err => console.log(err));
-  }, [props.searchParams.test_tpa_id]);
+  }, [params.get("test_tpa_id")]);
 
   const handleStartTPA = () => {
     if (kelas.trim() === "") {
@@ -38,17 +39,17 @@ const Ujian = (props) => {
 
     if (data.length !== 0) {
         if(data[0].status_pengerjaan != 0){
-            router.push('/test/session?&mahasiswa_test_matkul_id='+props.searchParams.mahasiswa_test_matkul_id);
+            router.push('/test/session?&mahasiswa_test_matkul_id='+params.get("mahasiswa_test_matkul_id"));
             return;
         }
-        router.push('/test/tpa/session?test_tpa_id=' + props.searchParams.test_tpa_id+'&mahasiswa_test_tpa_id='+ props.searchParams.id); 
+        router.push('/test/tpa/session?test_tpa_id=' + params.get("test_tpa_id")+'&mahasiswa_test_tpa_id='+ params.get("id")); 
         return;
     }
     axios.post("/api/prepare-test-tpa",{
-        "test_tpa_id":props.searchParams.test_tpa_id
+        "test_tpa_id":params.get("test_tpa_id")
         ,kelas})
     .then(resp=>{
-        router.push('/test/tpa/session?test_tpa_id=' + props.searchParams.test_tpa_id+'&mahasiswa_test_tpa_id='+resp.data.rows.insertId); 
+        router.push('/test/tpa/session?test_tpa_id=' + params.get("test_tpa_id")+'&mahasiswa_test_tpa_id='+resp.data.rows.insertId); 
     })
     .catch(err=>alert("Tidak dapat memulai Tes"));// Ganti dengan halaman ujian sebenarnya
   };
@@ -58,7 +59,7 @@ const Ujian = (props) => {
       url: "/api/test-matkul-categorized",
       data: {
           "ok": 1,
-          "test_matkul_id": props.searchParams.id,
+          "test_matkul_id": params.get("id"),
           "tpa_score":data[0].score,
           "kelas":kelas
       },
@@ -78,17 +79,17 @@ const Ujian = (props) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-black">
-        <h1 className="text-2xl font-bold">{props.searchParams.name}</h1>
-        <h3 className="mb-4">Mata Kuliah: {props.searchParams.matkul_name}</h3>
+        <h1 className="text-2xl font-bold">{params.get("name")}</h1>
+        <h3 className="mb-4">Mata Kuliah: {params.get("matkul_name")}</h3>
         <hr className="mb-3" />
         <p className="text-gray-700 mb-6">
-          {props.searchParams.deskripsi}
+          {params.get("deskripsi")}
         </p>
         <p className="text-gray-700 mb-6">
-          Mulai : {formatDateTimeHumanReadable(new Date(props.searchParams.start_date))}
+          Mulai : {formatDateTimeHumanReadable(new Date(params.get("start_date")))}
         </p>
         <p className="text-gray-700 mb-6">
-          Terakhir : {formatDateTimeHumanReadable(new Date(props.searchParams.due_date))}
+          Terakhir : {formatDateTimeHumanReadable(new Date(params.get("due_date")))}
         </p>
         <p className="text-gray-700 mb-6">
           Status Pengerjaan Test TPA : {data.length !== 0 ? "Sudah Mengerjakan TPA" : "Belum Mengerjakan TPA"}

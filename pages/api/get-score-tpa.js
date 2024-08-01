@@ -7,9 +7,8 @@ async function handler(req, res) {
     if (req.method === 'GET') {
         try {
             const {test_tpa_id} = req.query;
-            const conn = await initializeDatabase({
-                multipleStatements: true
-            })
+            console.log("LOG",test_tpa_id,req.user)
+            const conn = await initializeDatabase()
             const [test] =  await conn.execute(`
                 SELECT
                     *

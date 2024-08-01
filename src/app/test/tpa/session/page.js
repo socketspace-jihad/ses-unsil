@@ -1,7 +1,7 @@
 // pages/mulai-ujian.js
 "use client"
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
 const Session = (props) => {
@@ -13,6 +13,8 @@ const Session = (props) => {
   const [questions, setQuestions] = useState([]);
   const [listening, setListening] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const params = useSearchParams();
 
   // Set initial answers from localStorage on client side
   useEffect(() => {
@@ -26,7 +28,7 @@ const Session = (props) => {
   useEffect(() => {
     axios.get("/api/test-tpa", {
       params: {
-        "test_tpa_id": props.searchParams.test_tpa_id
+        "test_tpa_id": params.get("test_tpa_id")
       }
     })
       .then(response => {
@@ -53,7 +55,7 @@ const Session = (props) => {
           router.push("/auth/login");
         }
       });
-  }, [props.searchParams.test_tpa_id, router]);
+  }, [params.get("test_tpa_id"), router]);
 
   // Save answers to localStorage on client side
   useEffect(() => {
@@ -109,14 +111,14 @@ const Session = (props) => {
     const submittedAnswers = questions.reduce((acc, question, index) => {
       const selectedOption = question.options[answers[index]];
       if (selectedOption) {
-        acc.push([parseInt(props.searchParams.mahasiswa_test_tpa_id), question.id, selectedOption.id]);
+        acc.push([parseInt(params.get("mahasiswa_test_tpa_id")), question.id, selectedOption.id]);
       }
       return acc;
     }, []);
 
     axios.post("/api/submit-ujian-tpa", {
       "answers": submittedAnswers,
-      "mahasiswa_test_tpa_id": parseInt(props.searchParams.mahasiswa_test_tpa_id)
+      "mahasiswa_test_tpa_id": parseInt(params.get("mahasiswa_test_tpa_id"))
     })
       .then(resp => {
         if (typeof window !== 'undefined') {
