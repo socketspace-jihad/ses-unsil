@@ -6,8 +6,8 @@ async function handler(req, res) {
     // Handle different HTTP methods
     if (req.method === 'GET') {
         try {
-            const {test_tpa_id} = req.query;
-            console.log("LOG",test_tpa_id,req.user)
+            const {test_tpa_id,mahasiswa_test_tpa_id} = req.query;
+            console.log("LOG",req.query);
             const conn = await initializeDatabase()
             const [test] =  await conn.execute(`
                 SELECT
@@ -41,10 +41,10 @@ async function handler(req, res) {
                 LEFT JOIN test_tpa AS tt
                     ON tt.id = tts.test_tpa_id
                 LEFT JOIN mahasiswa_test_tpa_jawaban AS mttj
-                    ON mttj.test_tpa_jawaban_id = ttj.id
+                    ON mttj.test_tpa_jawaban_id = ttj.id AND mttj.mahasiswa_test_tpa_id = ?
                 WHERE tt.id = ?
                 GROUP BY ttj.id;
-            `,[test_tpa_id])
+            `,[mahasiswa_test_tpa_id,test_tpa_id])
             return res.status(200).json({test,maxScore,jawaban})
         } catch(error){
             console.log(error)

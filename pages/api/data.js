@@ -23,7 +23,8 @@ async function handler(req, res) {
                     test_count.test_matkul_categorized_id,
                     test_count.id AS mahasiswa_test_matkul_id,
                     IFNULL(test_count_tpa.counter,0) AS counter_tpa,
-                    test_count_tpa.status_pengerjaan AS status_pengerjaan_tpa
+                    test_count_tpa.status_pengerjaan AS status_pengerjaan_tpa,
+                    test_count_tpa.id AS mahasiswa_test_tpa_id
                 FROM 
                 test_matkul AS tm
                 LEFT JOIN matkul AS m
