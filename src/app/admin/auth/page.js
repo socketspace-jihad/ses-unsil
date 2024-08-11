@@ -3,23 +3,27 @@
 import Image from "next/image";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from "axios";
 
 export default function Home() {
 
-  const [nim, setNim] = useState('');
+  const [nidn, setnidn] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    // Contoh pengecekan login sederhana
-    if (nim === '123456' && password === 'password') {
-      router.push('/admin/dashboard'); // Ubah ke halaman tujuan setelah login berhasil
-    } else {
-      setError('Invalid NIM or password');
-    }
+    const body = {nidn,password}
+    axios.post("/api/admin-login",body)
+    .then(resp=>{
+      if(resp.status ==  200 || resp.status == 201) {
+        router.push('/admin/tes-mata-kuliah');
+      }
+    })
+    .catch(err=>{
+      console.log(err)
+    })
   };
 
   return (
@@ -30,16 +34,16 @@ export default function Home() {
           <h4 class="mb-4 text-sm text-center text-gray-400">Universitas Siliwangi - Dosen</h4>
           {error && <p className="text-red-500 text-xs italic">{error}</p>}
           <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="nim">
-              Nomor Induk Mahasiswa
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="nidn">
+              Nomor Induk Dosen Nasional
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="nim"
+              id="nidn"
               type="text"
-              placeholder="Nomor Induk Mahasiswa"
-              value={nim}
-              onChange={(e) => setNim(e.target.value)}
+              placeholder="Nomor Induk Dosen Nasional"
+              value={nidn}
+              onChange={(e) => setnidn(e.target.value)}
             />  
           </div>
           <div class="mb-6">

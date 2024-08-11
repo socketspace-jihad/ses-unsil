@@ -43,7 +43,7 @@ async function handler(req, res) {
                     GROUP BY test_tpa_id
                 ) AS test_count_tpa
                  ON test_count_tpa.test_tpa_id = tm.test_tpa_id
-
+                WHERE tm.published = 1
             `,[req.user.id,req.user.id]);
             return res.status(200).json({rows})
         } catch(error){

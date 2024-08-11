@@ -49,9 +49,6 @@ export default function Dashboard() {
         <nav className="mt-4">
           <ul>
             <li className="px-4 py-2 hover:bg-gray-700">
-              <a href="/dashboard">Dashboard</a>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-700">
               <button className="w-full text-left focus:outline-none" onClick={() => toggleSubMenu('tes')}>
                 Tes
               </button>
@@ -68,7 +65,7 @@ export default function Dashboard() {
               <a href="/profile">Profile</a>
             </li>
             <li className="px-4 py-2 hover:bg-gray-700">
-              <button onClick={() => { router.push('/login'); }} className="w-full text-left">
+              <button onClick={() => { router.push('/admin/auth'); }} className="w-full text-left">
                 Logout
               </button>
             </li>

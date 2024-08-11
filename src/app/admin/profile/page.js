@@ -7,6 +7,7 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { setCookie } from 'nookies';
+import DosenSidebar from '../../../../components/dosen/sidebar';
 
 // Register chart elements
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip);
@@ -18,7 +19,7 @@ const Profile = () => {
   const [testMatkul, setTestMatkul] = useState([]);
 
   useEffect(() => {
-    axios.get("/api/mahasiswa/profile")
+    axios.get("/api/dosen/profile")
       .then(resp => {
         setProfile(resp.data.rows[0]);
       })
@@ -26,15 +27,16 @@ const Profile = () => {
         console.log(err);
       });
 
-    axios.get("/api/mahasiswa/get-nilai-matkul")
+    axios.get("/api/dosen/get-nilai-matkul")
       .then(resp => {
+        console.log("MATKUL",resp);
         setTestMatkul(resp.data.rows); // Adjust if data is nested
       })
       .catch(err => {
         console.log(err);
       });
 
-    axios.get("/api/mahasiswa/get-nilai-tpa")
+    axios.get("/api/dosen/get-nilai-tpa")
       .then(resp => {
         console.log("TPA",resp);
         setTestTPA(resp.data.rows); // Adjust if data is nested
@@ -120,24 +122,7 @@ const Profile = () => {
 
   return (
     <div className="flex bg-gray-100 h-screen text-black">
-      <aside className="w-64 bg-gray-900 text-white">
-        <div className="p-4 text-lg font-bold">Smart Exam System</div>
-        <nav className="mt-4">
-          <ul>
-            <li className="px-4 py-2 hover:bg-gray-700">
-              <a href="/dashboard">Dashboard</a>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-700">
-              <a href="/profile">Profile</a>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-700">
-              <button onClick={handleLogout} className="w-full text-left">
-                Logout
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </aside>
+      <DosenSidebar/>
       <div id="content" className={`flex-1 transition-all duration-300 max-w-screen overflow-auto`}>
         <div className="min-h-screen bg-gray-100 p-6">
           <div className="flex items-center p-6">
@@ -148,9 +133,8 @@ const Profile = () => {
             />
             <div className="ml-6">
               <h1 className="text-3xl font-semibold text-gray-800">{profile.name}</h1>
-              <p className="text-gray-600">NPM: {profile.npm}</p>
+              <p className="text-gray-600">NIDN: {profile.nidn}</p>
               <p className="text-gray-600">Kontak: {profile.contact ? profile.contact : "-"}</p>
-              <p className="text-gray-600">Angkatan: {profile.angkatan}</p>
             </div>
             <div className="ml-6" id="socmed">
               {/* Social media links */}
@@ -159,7 +143,7 @@ const Profile = () => {
           <div className="bg-white shadow-md rounded-lg overflow-hidden flex flex-col space-y-4">
             {/* Bar Chart: Histori Nilai TPA */}
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-800">Histori Nilai TPA</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Histori Nilai Rata Rata Mahasiswa Ujian TPA</h2>
               <div className="mt-4 h-72">
                 <Bar data={tpaData} options={chartOptions} />
               </div>
@@ -167,7 +151,7 @@ const Profile = () => {
 
             {/* Bar Chart: Histori Nilai Matkul */}
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-800">Histori Nilai Matkul</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Histori Nilai Rata Rata Mahasiswa Ujian Mata Kuliah</h2>
               <div className="mt-4 h-72">
                 <Bar data={matkulData} options={chartOptions} />
               </div>

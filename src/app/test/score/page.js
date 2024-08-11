@@ -9,8 +9,6 @@ import axios from "axios";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function useParams() {}
-
 export default function Home(props) {
   const router = useRouter();
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
