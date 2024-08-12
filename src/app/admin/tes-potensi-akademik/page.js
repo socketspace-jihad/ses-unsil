@@ -67,7 +67,6 @@ export default function TestTPA() {
           >
             <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Buat Tes Baru</button>
           </Link>
-          <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Hapus</button>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg text-black">
@@ -117,7 +116,7 @@ export default function TestTPA() {
                     >
                     <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Lihat</button>
                     </Link>
-                  </td>
+                    </td>
                 </tr>
               ))}
             </tbody>

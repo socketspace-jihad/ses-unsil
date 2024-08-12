@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { formatDateTimeHumanReadable } from '../../../../utils/dateFormat';
 import DosenSidebar from '../../../../components/dosen/sidebar';
+import Link from 'next/link';
 
 export default function TesMataKuliah() {
   const router = useRouter();
@@ -59,7 +60,13 @@ export default function TesMataKuliah() {
         <h2 className="text-2xl font-semibold mb-4 text-center text-gray-700">Fakultas Ekonomi</h2>
         <h3 className="text-xl font-medium mb-4 text-center text-gray-700">Jurusan Ekonomi Syariah</h3>
         <div className="mb-4 flex justify-end space-x-2">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Buat Tes Baru</button>
+          <Link
+            href={{
+              pathname: "/admin/tes-mata-kuliah/create"
+            }}
+          >
+            <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Buat Tes Baru</button>
+          </Link>
           <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Hapus</button>
         </div>
         <div className="overflow-x-auto">
