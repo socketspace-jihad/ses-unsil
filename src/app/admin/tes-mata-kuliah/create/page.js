@@ -23,6 +23,8 @@ export default function CreateTestTPA() {
   const [examName, setExamName] = useState('');
   const [examDescription, setExamDescription] = useState('');
   const [selectedTestTPA, setSelectedTestTPA] = useState(''); // New state for dropdown
+  const [startDate, setStartDate] = useState(''); // New state for start date
+  const [dueDate, setDueDate] = useState(''); // New state for due date
   const [tabs, setTabs] = useState([
     { title: '', scoreLowerBound: '', scoreUpperBound: '', questions: [] }
   ]);
@@ -40,6 +42,8 @@ export default function CreateTestTPA() {
       if (parsedData && parsedData.categorized) {
         setExamName(parsedData.name || '');
         setExamDescription(parsedData.deskripsi || '');
+        setStartDate(parsedData.start_date || ''); // Restore start date
+        setDueDate(parsedData.due_date || ''); // Restore due date
         setTabs(
           parsedData.categorized.map((cat) => ({
             title: '',
@@ -162,6 +166,8 @@ export default function CreateTestTPA() {
     const examData = {
       name: examName,
       deskripsi: examDescription,
+      start_date: startDate, // Include start date
+      due_date: dueDate,     // Include due date
       test_tpa_id: selectedTestTPA,
       categorized: tabs.map((tab) => ({
         score_lower_limit: tab.scoreLowerBound,
@@ -180,30 +186,32 @@ export default function CreateTestTPA() {
     setModalMessage('Mohon tunggu...');
     setIsModalVisible(true);
     console.log(examData);
-    // axios
-    //   .post('/api/dosen/create-test-tpa', examData)
-    //   .then((response) => {
-    //     setModalMessage('Ujian berhasil dibuat!');
-    //     setTimeout(() => {
-    //       localStorage.removeItem('savedExamData');
-    //       router.push('/admin/tes-potensi-akademik');
-    //     }, 2000);
-    //   })
-    //   .catch((error) => {
-    //     setModalMessage('Terjadi kesalahan saat membuat ujian.');
-    //     console.error('Error creating exam:', error);
-    //   })
-    //   .finally(() => {
-    //     setTimeout(() => {
-    //       setIsModalVisible(false);
-    //     }, 2000);
-    //   });
+    axios
+      .post('/api/dosen/create-test-matkul', examData)
+      .then((response) => {
+        setModalMessage('Ujian berhasil dibuat!');
+        setTimeout(() => {
+          localStorage.removeItem('savedExamData');
+          router.push('/admin/tes-mata-kuliah');
+        }, 2000);
+      })
+      .catch((error) => {
+        setModalMessage('Terjadi kesalahan saat membuat ujian.');
+        console.error('Error creating exam:', error);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setIsModalVisible(false);
+        }, 2000);
+      });
   };
 
   const handleSave = () => {
     const examData = {
       name: examName,
       deskripsi: examDescription,
+      start_date: startDate, // Include start date
+      due_date: dueDate,     // Include due date
       test_tpa_id: selectedTestTPA,
       categorized: tabs.map((tab) => ({
         score_lower_limit: tab.scoreLowerBound,
@@ -276,6 +284,24 @@ export default function CreateTestTPA() {
                 🔊
               </button>
             </div>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-600 font-semibold mb-2">Waktu Mulai</label>
+            <input
+              type="datetime-local"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-600 font-semibold mb-2">Waktu Selesai</label>
+            <input
+              type="datetime-local"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 font-semibold mb-2">Test TPA</label>

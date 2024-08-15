@@ -11,8 +11,10 @@ export default function TesMataKuliah() {
   const router = useRouter();
 
   const [testData, setTestData] = useState([]);
-
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [selectedIds, setSelectedIds] = useState(new Set()); // State for selected row IDs
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [isWarning, setIsWarning] = useState(false); // State for warning message
 
   const handleSort = (key) => {
     let direction = 'ascending';
@@ -30,6 +32,18 @@ export default function TesMataKuliah() {
     });
 
     setTestData(sortedData);
+  };
+
+  const handleCheckboxChange = (id) => {
+    setSelectedIds((prevSelectedIds) => {
+      const updatedSelectedIds = new Set(prevSelectedIds);
+      if (updatedSelectedIds.has(id)) {
+        updatedSelectedIds.delete(id);
+      } else {
+        updatedSelectedIds.add(id);
+      }
+      return updatedSelectedIds;
+    });
   };
 
   function toggleSubMenu(id) {
@@ -52,6 +66,30 @@ export default function TesMataKuliah() {
       });
   }, []);
 
+  const handleDelete = () => {
+    if (selectedIds.size === 0) {
+      setIsWarning(true); // Show warning message if no rows selected
+    } else {
+      setIsModalOpen(true); // Show the confirmation modal if rows are selected
+    }
+  };
+
+  const confirmDelete = () => {
+    console.log('Selected IDs:', Array.from(selectedIds));
+    // Implement delete functionality here, e.g., send a delete request to the server
+    setIsModalOpen(false); // Hide the modal after deletion
+    setSelectedIds(new Set()); // Clear selected IDs after deletion
+  };
+
+  const cancelDelete = () => {
+    setIsModalOpen(false); // Hide the modal if canceled
+    setIsWarning(false); // Hide the warning message if canceled
+  };
+
+  const handleWarningClose = () => {
+    setIsWarning(false); // Close the warning message
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       <DosenSidebar/>
@@ -67,7 +105,7 @@ export default function TesMataKuliah() {
           >
             <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Buat Tes Baru</button>
           </Link>
-          <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Hapus</button>
+          <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onClick={handleDelete}>Non-Aktif</button>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg text-black">
@@ -112,6 +150,12 @@ export default function TesMataKuliah() {
                     {sortConfig.key === 'need_test_tpa' && sortConfig.direction === 'ascending' ? '↑' : '↓'}
                   </button>
                 </th>
+                <th className="py-2 px-4 border-r">
+                  Status
+                  <button className="ml-1 text-xs" onClick={() => handleSort('published')}>
+                    {sortConfig.key === 'published' && sortConfig.direction === 'ascending' ? '↑' : '↓'}
+                  </button>
+                </th>
                 <th className="py-2 px-4">
                   Aksi
                 </th>
@@ -121,7 +165,12 @@ export default function TesMataKuliah() {
               {testData.map((item) => (
                 <tr key={item.id} className="border-b hover:bg-gray-50">
                   <td className="py-2 px-4 border-r">
-                    <input type="checkbox" className="mx-2" />
+                    <input
+                      type="checkbox"
+                      className="mx-2"
+                      checked={selectedIds.has(item.id)}
+                      onChange={() => handleCheckboxChange(item.id)}
+                    />
                   </td>
                   <td className="py-2 px-4 border-r">{item.id}</td>
                   <td className="py-2 px-4 border-r">{item.name}</td>
@@ -129,31 +178,63 @@ export default function TesMataKuliah() {
                   <td className="py-2 px-4 border-r">{formatDateTimeHumanReadable(new Date(item.created_at))}</td>
                   <td className="py-2 px-4 border-r">{formatDateTimeHumanReadable(new Date(item.due_date))}</td>
                   <td className="py-2 px-4 border-r">{item.need_test_tpa ? 'Ya' : 'Tidak'}</td>
+                  <td className="py-2 px-4 border-r">{item.published == 1 ? 'Aktif' : 'Tidak Aktif'}</td>
                   <td className="py-2 px-4 flex">
-                    <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Lihat</button>
-                    <button type="button" className="focus:outline-none text-black bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:focus:ring-yellow-900">Edit</button>
+                    <Link
+                      href={{
+                        pathname: "/admin/tes-mata-kuliah/detail",
+                        query: item
+                      }}
+                    >
+                      <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Lihat</button>
+                    </Link>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        {/* Warning Modal */}
+        {isWarning && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 text-black">
+            <div className="bg-white p-6 rounded shadow-lg">
+              <h2 className="text-xl font-bold mb-4">Peringatan</h2>
+              <p className="mb-4">Anda harus memilih setidaknya satu baris sebelum menon-aktifkan Tes.</p>
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                onClick={handleWarningClose}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Confirmation Modal */}
+        {isModalOpen && !isWarning && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 text-black">
+            <div className="bg-white p-6 rounded shadow-lg">
+              <h2 className="text-xl font-bold mb-4">Konfirmasi Penon-aktifan Tes</h2>
+              <p className="mb-4">Apakah Anda yakin ingin menon-aktifkan baris yang dipilih?</p>
+              <div className="flex justify-end space-x-2">
+                <button
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  onClick={confirmDelete}
+                >
+                  Non-Aktif
+                </button>
+                <button
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                  onClick={cancelDelete}
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
-
-  function handleCreate() {
-    // Implement create functionality here
-    console.log('Create button clicked');
-  }
-
-  function handleDelete() {
-    // Implement delete functionality here
-    console.log('Delete button clicked');
-  }
-
-  function handleUpdate() {
-    // Implement update functionality here
-    console.log('Update button clicked');
-  }
 }
