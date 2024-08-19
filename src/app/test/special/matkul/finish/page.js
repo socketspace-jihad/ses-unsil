@@ -153,22 +153,10 @@ export default function Home() {
   const [narration, setNarration] = useState('');
 
   useEffect(() => {
-    axios.get("/api/special/test-matkul-by-id", {
-      params: {
-        "test_matkul_id": params.get("test_matkul_id")
-      }
-    })
-      .then(resp => {
-        let data = resp.data.rows[0];
-        setExam(data);
-        setNarration(`
-            Selamat!, Ujian Tes Mata Kuliah telah selesai.
-            Silakan hubungi Admin Smart Exam Sistem dan Meninggalkan tempat Ujian.
-            Terimakasih, Semoga Beruntung!.`);
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    setNarration(`
+      Selamat!, Ujian Tes Mata Kuliah telah selesai.
+      Silakan hubungi Admin Smart Exam Sistem dan Meninggalkan tempat Ujian.
+      Terimakasih, Semoga Beruntung!.`);
   }, [params]);
 
   const handleFinish = () => {

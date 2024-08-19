@@ -12,7 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [buttonDisabled,setButtonDisabled] = useState(false);
+  const [buttonDisabled,setButtonDisabled] = useState(true);
   const [buttonText,setButtonText] = useState("Pilih Mata Kuliah terlebih dahulu");
 
   const [mahasiswaTestData,setMahasiswaTestData] = useState([]);
@@ -20,6 +20,8 @@ export default function Home() {
 
   const [kelasInputDisabled, setKelasInputDisabled] = useState(true);
   const [kelas, setKelas] = useState('');
+
+  const [buttonStyle,setButtonStyle] = useState("bg-grey-500 hover:bg-grey-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline");
 
   const router = useRouter();
 
@@ -105,13 +107,29 @@ export default function Home() {
             setMahasiswaTestData(resp.data);
             setMahasiswaTestKind("tpa");
             setButtonText("Kerjakan Tes TPA")
+            setButtonDisabled(false);
+            setButtonStyle("bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline")
             return
         }
         setKelas(resp.data.testTPA[0].kelas)
         setKelasInputDisabled(true);
         setMahasiswaTestData(resp.data);
         setMahasiswaTestKind("matkul");
-        setButtonText("Kerjakan Tes Mata Kuliah")
+        if(resp.data.testMatkul.length > 0) {
+            if(resp.data.testMatkul[0].status_pengerjaan == 1){
+                setButtonText("Kamu sudah mengerjakan Tes Mata Kuliah ini")
+                setButtonStyle("bg-grey-500 hover:bg-grey-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline")
+                setButtonDisabled(true);
+            } else {
+                setButtonText("Kerjakan Tes Mata Kuliah")
+                setButtonDisabled(false);
+                setButtonStyle("bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline")
+            }
+        } else {
+            setButtonText("Kerjakan Tes Mata Kuliah")
+            setButtonDisabled(false);
+            setButtonStyle("bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline")
+        }
     })
     .catch(err=>{
         console.log(err);
@@ -166,14 +184,9 @@ export default function Home() {
           </div>
           <div className="flex items-center justify-between">
             <button 
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+              className={buttonStyle}
               type="submit"
-              disabled={()=>{
-                if(loading || disabled){
-                    return true
-                }
-                return false
-              }}
+              disabled={loading || buttonDisabled}
             >
               {buttonText}
             </button>
