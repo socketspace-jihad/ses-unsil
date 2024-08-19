@@ -105,7 +105,7 @@ const Session = () => {
             }
             setLoading(false);
             setShowModal(false);
-            router.push('/test/special/finish?test_matkul_id=${params.get("test_matkul_id")}&test_tpa_id=${params.get("test_tpa_id")}&mahasiswa_test_tpa_id=${params.get("mahasiswa_test_tpa_id")}&kelas=${params.get("kelas")}');
+            router.push(`/test/special/finish?test_matkul_id=${params.get("test_matkul_id")}&test_tpa_id=${params.get("test_tpa_id")}&mahasiswa_test_tpa_id=${params.get("mahasiswa_test_tpa_id")}&kelas=${params.get("kelas")}`);
         })
         .catch(err => {
             console.log(err);
