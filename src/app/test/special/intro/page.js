@@ -51,7 +51,7 @@ export default function Home() {
     if(mahasiswaTestKind == "tpa") {
         if(mahasiswaTestData.testTPA.length == 0){
             axios.post("/api/special/create-mahasiswa-test-tpa",{
-                "test_tpa_id": data.testTPA.test_tpa_id,
+                "test_tpa_id": selectedExam.test_tpa_id,
                 "kelas":kelas
             })
             .then(resp=>{
