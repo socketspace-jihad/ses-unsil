@@ -7,6 +7,7 @@ async function handler(req, res) {
         const conn = await initializeDatabase()
         try {
             const data = req.body;
+            console.log(data);
             const [rows] =  await conn.execute(`
                 INSERT INTO
                     mahasiswa_test_tpa
