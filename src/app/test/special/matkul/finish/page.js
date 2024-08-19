@@ -1,9 +1,13 @@
 "use client"
 import axios from 'axios';
-import { useSearchParams,useRouter } from 'next/navigation';
+import cookies from 'next-cookies';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { destroyCookie, setCookie } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
 
 const SoundWave = ({ text, onFinish, setStatus }) => {
+
+  const router = useRouter();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [notification, setNotification] = useState('');
@@ -23,7 +27,6 @@ const SoundWave = ({ text, onFinish, setStatus }) => {
     };
     utterance.onend = () => {
       setIsSpeaking(false);
-      startRecognition(); // Start voice recognition after speaking
     };
 
     speechSynthesis.speak(utterance);
@@ -34,7 +37,6 @@ const SoundWave = ({ text, onFinish, setStatus }) => {
     utterance.lang = 'id-ID';
     utterance.rate = 0.5;
     utterance.onend = () => {
-      startRecognition(); // Restart recognition after speaking the notification
     };
 
     speechSynthesis.speak(utterance);
@@ -79,7 +81,7 @@ const SoundWave = ({ text, onFinish, setStatus }) => {
           bar.style.height = `${randomHeight}%`;
         });
 
-        if (textIndexRef.current < text.length-1) {
+        if (textIndexRef.current < text.length - 1) {
           setDisplayedText((prev) => prev + text[textIndexRef.current]);
           textIndexRef.current++;
         }
@@ -97,6 +99,11 @@ const SoundWave = ({ text, onFinish, setStatus }) => {
       speakText();
     }
   }, [text]);
+
+  const handleLogout = () => {
+    setCookie(null, "auth-token", null, { path: "/" });
+    router.push("/test/special");
+  };
 
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-white">
@@ -118,12 +125,20 @@ const SoundWave = ({ text, onFinish, setStatus }) => {
           {notification}
         </div>
       )}
-      <button
-        className="mt-8 p-4 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700"
-        onClick={speakText}
-      >
-        Bacakan Paragraf
-      </button>
+      <div className="mt-8 flex space-x-4">
+        <button
+          className="p-4 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700"
+          onClick={speakText}
+        >
+          Bacakan Paragraf
+        </button>
+        <button
+          className="p-4 bg-red-600 text-white rounded-lg shadow-lg hover:bg-red-700"
+          onClick={handleLogout}
+        >
+          Keluar
+        </button>
+      </div>
     </div>
   );
 };
@@ -147,11 +162,9 @@ export default function Home() {
         let data = resp.data.rows[0];
         setExam(data);
         setNarration(`
-            Selamat Datang di Smart Exam Sistem, Universitas Siliwangi. Hari ini kamu akan melaksanakan ujian ${data.name}.
-            Namun, sebelum melakukan ujian Mata Kuliah, kamu akan melakukan Tes Potensi Akademik terlebih dahulu, untuk mengetahui tingkat kesulitan yang akan diberikan.
-            Tes Potensi Akademik ini bernama ${data.test_tpa_name}.
-            Katakan, "Saya Mengerti". untuk lanjut dan mulai ujian .. atau.. "Saya minta ulangi" .. untuk mengulang`);
-        // setNarration("OK")
+            Selamat!, Ujian Tes Mata Kuliah telah selesai.
+            Silakan hubungi Admin Smart Exam Sistem dan Meninggalkan tempat Ujian.
+            Terimakasih, Semoga Beruntung!.`);
       })
       .catch(err => {
         console.log(err)
@@ -160,7 +173,8 @@ export default function Home() {
 
   const handleFinish = () => {
     // Handle the case when the user says "Mengerti"
-    router.push(`/test/special/session?test_tpa_id=${exam.test_tpa_id}&mahasiswa_test_tpa_id=${params.get("mahasiswa_test_tpa_id")}&test_matkul_id=${exam.id}&kelas=${params.get("kelas")}`);
+    // router.push(`/test/special/session?test_tpa_id=${exam.test_tpa_id}&mahasiswa_test_tpa_id=${params.get("mahasiswa_test_tpa_id")}`);
+    console.log("OK");
   };
 
   return (

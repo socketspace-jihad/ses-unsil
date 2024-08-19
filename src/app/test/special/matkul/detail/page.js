@@ -148,10 +148,9 @@ export default function Home() {
         setExam(data);
         setNarration(`
             Selamat Datang di Smart Exam Sistem, Universitas Siliwangi. Hari ini kamu akan melaksanakan ujian ${data.name}.
-            Namun, sebelum melakukan ujian Mata Kuliah, kamu akan melakukan Tes Potensi Akademik terlebih dahulu, untuk mengetahui tingkat kesulitan yang akan diberikan.
-            Tes Potensi Akademik ini bernama ${data.test_tpa_name}.
-            Katakan, "Saya Mengerti". untuk lanjut dan mulai ujian .. atau.. "Saya minta ulangi" .. untuk mengulang`);
-        // setNarration("OK")
+            Kamu sudah melaksanakan Ujian Tes Potensi Akademik sebagai prasyarat mengerjakan ujian ini.
+            Maka kamu akan langsung mengerjakan ujian Tes Mata Kuliah.
+            Katakan, "Saya Mengerti". untuk lanjut dan mulai ujian Tes Mata Kuliah .. atau.. "Saya minta ulangi" .. untuk mengulang`);
       })
       .catch(err => {
         console.log(err)
@@ -160,7 +159,7 @@ export default function Home() {
 
   const handleFinish = () => {
     // Handle the case when the user says "Mengerti"
-    router.push(`/test/special/session?test_tpa_id=${exam.test_tpa_id}&mahasiswa_test_tpa_id=${params.get("mahasiswa_test_tpa_id")}&test_matkul_id=${exam.id}&kelas=${params.get("kelas")}`);
+    router.push(`/test/special/matkul/session?test_matkul_id=${exam.test_matkul_id}&mahasiswa_test_matkul_id=${params.get("mahasiswa_test_matkul_id")}&test_matkul_categorized_id=${params.get("test_matkul_categorized_id")}`);
   };
 
   return (

@@ -15,9 +15,9 @@ const Session = () => {
   const params = useSearchParams();
 
   useEffect(() => {
-    axios.get("/api/test-tpa", {
+    axios.get("/api/test-matkul", {
       params: {
-        "test_tpa_id": params.get("test_tpa_id")
+        "test_matkul_categorized_id": params.get("test_matkul_categorized_id")
       }
     })
       .then(response => {
@@ -49,7 +49,7 @@ const Session = () => {
           router.push("/auth/login");
         }
       });
-  }, [params.get("test_tpa_id"), router]);
+  }, [params.get("test_matkul_id"), router]);
 
   const handleAnswer = (index) => {
     const newAnswers = [...answers];
@@ -90,14 +90,14 @@ const Session = () => {
         const submittedAnswers = questions.reduce((acc, question, index) => {
         const selectedOption = question.options[answer[index]];
         if (selectedOption) {
-            acc.push([parseInt(params.get("mahasiswa_test_tpa_id")), question.id, selectedOption.id]);
+            acc.push([parseInt(params.get("mahasiswa_test_matkul_id")), question.id, selectedOption.id]);
         }
         return acc;
         }, []);
         setShowModal(true);
-        axios.post("/api/submit-ujian-tpa", {
+        axios.post("/api/submit-ujian-matkul", {
             "answers": submittedAnswers,
-            "mahasiswa_test_tpa_id": parseInt(params.get("mahasiswa_test_tpa_id"))
+            "mahasiswa_test_matkul_id": parseInt(params.get("mahasiswa_test_matkul_id"))
         })
         .then(resp => {
             if (typeof window !== 'undefined') {
@@ -105,7 +105,7 @@ const Session = () => {
             }
             setLoading(false);
             setShowModal(false);
-            router.push('/test/special/finish?test_matkul_id=${params.get("test_matkul_id")}&test_tpa_id=${params.get("test_tpa_id")&mahasiswa_test_tpa_id=${params.get("mahasiswa_test_tpa_id")&kelas=${params.get("kelas")}}}');
+            router.push('/test/special/matkul/finish');
         })
         .catch(err => {
             console.log(err);

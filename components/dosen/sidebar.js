@@ -25,6 +25,13 @@ export default function DosenSidebar(){
             </li>
         </Link>
         <Link href={{
+            pathname: "/admin/mahasiswa"
+        }}>
+            <li className="px-4 py-2 hover:bg-gray-700">
+                Mahasiswa
+            </li>
+        </Link>
+        <Link href={{
             pathname: "/admin/profile"
         }}>
             <li className="px-4 py-2 hover:bg-gray-700">

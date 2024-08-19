@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         }
 
         // Create JWT token
-        const token = jwt.sign({ id: user.id, nidn: user.nidn }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, nidn: user.nidn }, secretKey, { expiresIn: '24h' });
 
         // Set a cookie for authentication
         setCookie('auth-token', token, { req, res, maxAge: 60 * 60 * 24 }); // Example of using cookies-next to set a cookie
