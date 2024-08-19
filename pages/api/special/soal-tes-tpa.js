@@ -1,5 +1,4 @@
 import { initializeDatabase } from "@/dbconfig";
-import { authMiddleware } from "../../middleware/auth"
 import { specialMiddleware } from "../../../middleware/special";
 
 async function handler(req,res){
