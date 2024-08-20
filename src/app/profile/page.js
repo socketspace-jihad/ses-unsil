@@ -16,11 +16,23 @@ const Profile = () => {
   const [profile, setProfile] = useState({});
   const [testTPA, setTestTPA] = useState([]);
   const [testMatkul, setTestMatkul] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    name: '',
+    contact: '',
+    angkatan: '',
+  });
 
   useEffect(() => {
     axios.get("/api/mahasiswa/profile")
       .then(resp => {
         setProfile(resp.data.rows[0]);
+        setEditData({
+          name: resp.data.rows[0].name,
+          contact: resp.data.rows[0].contact,
+          angkatan: resp.data.rows[0].angkatan,
+          npm: resp.data.rows[0].npm
+        });
       })
       .catch(err => {
         console.log(err);
@@ -118,6 +130,17 @@ const Profile = () => {
     router.push("/auth/login");
   };
 
+  const handleEdit = () => {
+    axios.put('/api/mahasiswa/update-profile', editData)
+      .then(resp => {
+        setProfile(editData);
+        setIsEditing(false);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   return (
     <div className="flex bg-gray-100 h-screen text-black">
       <aside className="w-64 bg-gray-900 text-white">
@@ -147,10 +170,41 @@ const Profile = () => {
               className="w-32 h-32 rounded-full border-4 border-blue-500"
             />
             <div className="ml-6">
-              <h1 className="text-3xl font-semibold text-gray-800">{profile.name}</h1>
-              <p className="text-gray-600">NPM: {profile.npm}</p>
-              <p className="text-gray-600">Kontak: {profile.contact ? profile.contact : "-"}</p>
-              <p className="text-gray-600">Angkatan: {profile.angkatan}</p>
+              {isEditing ? (
+                <div>
+                  <input
+                    type="text"
+                    className="text-3xl font-semibold text-gray-800 border-b"
+                    value={editData.name}
+                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                  />
+                  <input
+                    type="text"
+                    className="text-gray-600 border-b"
+                    value={editData.contact}
+                    onChange={(e) => setEditData({ ...editData, contact: e.target.value })}
+                  />
+                  <input
+                    type="text"
+                    className="text-gray-600 border-b"
+                    value={editData.angkatan}
+                    onChange={(e) => setEditData({ ...editData, angkatan: e.target.value })}
+                  />
+                  <button onClick={handleEdit} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <h1 className="text-3xl font-semibold text-gray-800">{profile.name}</h1>
+                  <p className="text-gray-600">NPM: {profile.npm}</p>
+                  <p className="text-gray-600">Kontak: {profile.contact ? profile.contact : "-"}</p>
+                  <p className="text-gray-600">Angkatan: {profile.angkatan}</p>
+                  <button onClick={() => setIsEditing(true)} className="mt-2 bg-gray-800 text-white px-4 py-2 rounded">
+                    Edit
+                  </button>
+                </div>
+              )}
             </div>
             <div className="ml-6" id="socmed">
               {/* Social media links */}
