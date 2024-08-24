@@ -69,8 +69,11 @@ export default function Home() {
             </a>
           </div>
         </form>
-        <p class="text-center text-gray-500 text-xs">
-          &copy;2024 PT. Transformasi Data Indonesia ( SocketSpace ). All rights reserved.
+        <p className="text-center text-gray-500 text-xs">
+          Tim Program Bantuan Inovasi Pembelajaran dan Teknologi Bantu bagi Mahasiswa Penyandang Disabilitas
+          <br/>Universitas Siliwangi<br/>
+          Direktorat Pembelajaran dan Kemahasiswaan Kementerian Pendidikan, Kebudayaan, Riset dan Teknologi
+          <br/>2024
         </p>
       </div>
     </main>
