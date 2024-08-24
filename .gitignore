@@ -7,6 +7,8 @@
 .yarn/install-state.gz
 
 ./mail.json
+mail.json
+utils/mail.json
 
 # testing
 /coverage

@@ -21,6 +21,7 @@ export async function sendEmail(to,subject,text) {
   // Get access token
   const creds = await auth.authorize();
 
+
   // Create a transporter object using nodemailer
   const transporter = nodemailer.createTransport({
     service: 'gmail',

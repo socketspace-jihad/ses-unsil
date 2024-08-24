@@ -110,7 +110,7 @@ export default function CreateMahasiswa() {
               type="checkbox"
               id="tunanetra"
               name="tunanetra"
-              checked={formData.disability_status}
+              value={formData.disability_status}
               onChange={handleChange}
               className="mr-2"
             />
