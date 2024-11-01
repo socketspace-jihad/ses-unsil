@@ -73,9 +73,9 @@ export default function Dashboard() {
         </nav>
       </aside>
       <main className="flex-1 p-6">
+        <h3 className="text-xl font-medium mb-4 text-center text-gray-700">Program Studi Manajemen Mutu Halal</h3>
+        <h2 className="text-2xl font-semibold mb-4 text-center text-gray-700">Fakultas Agama Islam</h2>
         <h1 className="text-3xl font-bold mb-4 text-center text-gray-700">Universitas Siliwangi</h1>
-        <h2 className="text-2xl font-semibold mb-4 text-center text-gray-700">Fakultas Ekonomi</h2>
-        <h3 className="text-xl font-medium mb-4 text-center text-gray-700">Jurusan Ekonomi Syariah</h3>
         <div className="mb-4 flex justify-end space-x-2">
           <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Buat Tes Baru</button>
           <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Hapus</button>
