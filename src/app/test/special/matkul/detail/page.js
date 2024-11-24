@@ -158,8 +158,17 @@ export default function Home() {
   }, [params]);
 
   const handleFinish = () => {
+    const utterance = new SpeechSynthesisUtterance(`Baik.. Kita akan mulai ujian.. Memulai hitungan mundur.. 3 ... 2 ... 1 ...`);
+    utterance.lang = 'id-ID';
+    utterance.rate = 0.3;
+    utterance.onstart = () => {
+    };
+    utterance.onend = () => {
+      router.push(`/test/special/matkul/session?test_matkul_id=${exam.test_matkul_id}&mahasiswa_test_matkul_id=${params.get("mahasiswa_test_matkul_id")}&test_matkul_categorized_id=${params.get("test_matkul_categorized_id")}`);
+    };
+
+    speechSynthesis.speak(utterance);
     // Handle the case when the user says "Mengerti"
-    router.push(`/test/special/matkul/session?test_matkul_id=${exam.test_matkul_id}&mahasiswa_test_matkul_id=${params.get("mahasiswa_test_matkul_id")}&test_matkul_categorized_id=${params.get("test_matkul_categorized_id")}`);
   };
 
   return (

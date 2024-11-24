@@ -22,7 +22,6 @@ const SoundWave = ({ text, options, onFinish, setStatus }) => {
     utterance.onend = () => {
       setIsSpeaking(false);
       speakOptions();
-      startRecognition();
     };
 
     speechSynthesis.speak(utterance);
@@ -33,6 +32,9 @@ const SoundWave = ({ text, options, onFinish, setStatus }) => {
     const utterance = new SpeechSynthesisUtterance(`Opsi jawaban adalah ${optionsText}... dan katakan "Saya minta ulangi" untuk mengulangi pertanyaan dan katakan "Saya ingin lanjut" untuk melewati pertanyaan`);
     utterance.lang = 'id-ID';
     utterance.rate = 0.5;
+    utterance.onend = () => {
+      startRecognition();
+    }
     speechSynthesis.speak(utterance);
   };
 
@@ -49,12 +51,14 @@ const SoundWave = ({ text, options, onFinish, setStatus }) => {
     newRecognition.lang = 'id-ID';
     newRecognition.interimResults = false;
     newRecognition.continuous = true;
-    newRecognition.onresult = (event) => {
+    newRecognition.onresult = async(event) => {
       const transcript = event.results[0][0].transcript.toLowerCase();
       const match = transcript.match(/saya pilih ([a-z])/);
       if (match) {
         const optionIndex = match[1].toUpperCase().charCodeAt(0) - 65;
         if (optionIndex >= 0 && optionIndex < options.length) {
+          const audio = new Audio("/confirmed.mp3")
+          await audio.play();
           setStatus('loading');
           speechSynthesis.cancel();
           newRecognition.stop();
@@ -69,8 +73,11 @@ const SoundWave = ({ text, options, onFinish, setStatus }) => {
       } else {
         if(transcript.includes("ulang")){
             speechSynthesis.cancel();
+            newRecognition.stop();
             speakText();
         } else if(transcript.includes("lanjut")) {
+          console.log("LANJUT");
+            setStatus('loading');
             speechSynthesis.cancel();
             newRecognition.stop();
             setNotification('');
